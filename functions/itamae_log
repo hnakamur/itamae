@@ -39,15 +39,18 @@ EOF
 itamae_log() {
   local log_level=${itamae_log__default_level}
   local tag=${itamae_log__default_tag}
-  while getopts l:t:s name; do
-    case $name in
+  OPTIND=1
+  while getopts l:t: flag; do
+    case $flag in
     l) log_level="$OPTARG" ;;
     t) tag="$OPTARG" ;;
-    *) echo Usage: itame_log [-l level] [-s] [-t tag] message... 1>&2
+    *) echo Usage: itame_log [-l level] [-t tag] message... 1>&2
        exit 1
        ;;
     esac
   done
+  shift $(( $OPTIND - 1))
+
   if [ `itamae_log__level_num $log_level` -ge \
        `itamae_log__level_num $itamae_log__enabled_level` ]; then
     if [ "$itamae_log__file_enabled" != "0" ]; then
