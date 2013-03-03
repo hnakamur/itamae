@@ -40,7 +40,7 @@ ntp__config() {
   local current_servers=`ntp__get_servers`
   if [ "`sh__normalize_words $current_servers`" != \
        "`sh__normalize_words $ntp__servers`" ]; then
-    if service ntpd status; then
+    if service ntpd status > /dev/null; then
       service ntpd stop
       itamae_log -t ntp Stopped ntpd service temporarily to run ntpdate.
     fi
@@ -54,7 +54,7 @@ ntp__config() {
     itamae_log -t ntp Configured $ntp__config_file
     rm $script
   fi
-  if ! service ntpd status; then
+  if ! service ntpd status > /dev/null; then
     service ntpd start
     itamae_log -t ntp Done: service ntpd start
   fi
