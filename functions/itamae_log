@@ -3,9 +3,9 @@ itamae_log__facility=local6
 itamae_log__rsyslog_conf_file=/etc/rsyslog.d/itamae.conf
 
 # debug, info, notice, warning, err, crit, alert, emerg, panic
-itamae_log__enabled_level=debug
+itamae_log__enabled_level=info
 
-itamae_log__default_level=debug
+itamae_log__default_level=notice
 itamae_log__default_tag=itamae
 
 itamae_log__file_enabled=1
@@ -36,7 +36,7 @@ EOF
   fi
 }
 
-itamae_log() {
+itamae_log__log_stdin() {
   local log_level=${itamae_log__default_level}
   local tag=${itamae_log__default_tag}
   OPTIND=1
@@ -66,5 +66,34 @@ itamae_log() {
     fi
   else
     cat > /dev/null
+  fi
+}
+
+itamae_log() {
+  local log_level=${itamae_log__default_level}
+  local tag=${itamae_log__default_tag}
+  OPTIND=1
+  while getopts l:t: flag; do
+    case $flag in
+    l) log_level="$OPTARG" ;;
+    t) tag="$OPTARG" ;;
+    *) echo Usage: itame_log [-l level] [-t tag] message... 1>&2
+       exit 1
+       ;;
+    esac
+  done
+  shift $(( $OPTIND - 1))
+
+  if [ `itamae_log__level_num $log_level` -ge \
+       `itamae_log__level_num $itamae_log__enabled_level` ]; then
+    if [ "$itamae_log__file_enabled" != "0" ]; then
+      local stderr=
+      if [ "$itamae_log__stderr_enabled" != "0" ]; then
+        stderr=-s
+      fi
+      logger -p ${itamae_log__facility}.${log_level} -i ${stderr} -t ${tag} $@
+    elif [ "$itamae_log__stderr_enabled" != "0" ]; then
+      echo $@ 1>&2
+    fi
   fi
 }
