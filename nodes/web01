@@ -1,0 +1,9 @@
+# include roles and cookbooks
+. ${ITAMAE_HOME}/roles/basic_linux
+
+# override variables and functions
+
+itamae__main() {
+  set -x
+  basic_linux__role__main
+}

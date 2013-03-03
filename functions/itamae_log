@@ -1,0 +1,67 @@
+itamae_log__file=/var/log/itamae.log
+itamae_log__facility=local6
+itamae_log__rsyslog_conf_file=/etc/rsyslog.d/itamae.conf
+
+# debug, info, notice, warning, err, crit, alert, emerg, panic
+itamae_log__enabled_level=debug
+
+itamae_log__default_level=debug
+itamae_log__default_tag=itamae
+
+itamae_log__file_enabled=1
+itamae_log__stderr_enabled=0
+
+itamae_log__level_num() {
+  case $1 in
+  debug)   echo 1 ;;
+  info)    echo 2 ;;
+  notice)  echo 3 ;;
+  warning) echo 4 ;;
+  crit)    echo 5 ;;
+  alert)   echo 6 ;;
+  emerg)   echo 7 ;;
+  panic)   echo 8 ;;
+  none)    echo 9 ;;
+  *)       echo Wrong log level: $1; exit 1 ;;
+  esac
+}
+
+itamae_log__config() {
+  if [ ! -f $itamae_log__rsyslog_conf_file -o \
+    `grep -qF "${itamae_log__facility}.* ${itamae_log__file}" $itamae_log__rsyslog_conf_file; echo $?` -ne 0 ]; then
+    cat <<EOF > $itamae_log__rsyslog_conf_file
+${itamae_log__facility}.* ${itamae_log__file}
+EOF
+    service rsyslog restart
+  fi
+}
+
+itamae_log() {
+  local log_level=${itamae_log__default_level}
+  local tag=${itamae_log__default_tag}
+  while getopts l:t:s name; do
+    case $name in
+    l) log_level="$OPTARG" ;;
+    t) tag="$OPTARS" ;;
+    *) echo Usage: itame_log [-l level] [-s] [-t tag] message... 1>&2
+       exit 1
+       ;;
+    esac
+  done
+  if [ `itamae_log__level_num $log_level` -ge \
+       `itamae_log__level_num $itamae_log__enabled_level` ]; then
+    if [ "$itamae_log__file_enabled" != "0" ]; then
+      local stderr=
+      if [ "$itamae_log__stderr_enabled" != "0" ]; then
+        stderr=-s
+      fi
+      logger -p ${itamae_log__facility}.${log_level} -i ${stderr} -t ${tag} $@
+    elif [ "$itamae_log__stderr_enabled" != "0" ]; then
+      cat 1>&2
+    else
+      cat > /dev/null
+    fi
+  else
+    cat > /dev/null
+  fi
+}

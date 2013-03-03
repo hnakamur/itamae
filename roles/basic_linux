@@ -1,0 +1,12 @@
+# include cookbooks
+
+. ${ITAMAE_HOME}/cookbooks/ntp
+. ${ITAMAE_HOME}/cookbooks/sysstat
+
+
+# override variables and functions
+
+basic_linux__role__main() {
+  ntp__main
+  sysstat__main
+}

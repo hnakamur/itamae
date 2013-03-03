@@ -1,0 +1,27 @@
+sh__get_x() {
+  case "$-" in
+  *x*) echo -x;;
+  *)   echo +x;;
+  esac
+}
+
+sh__normalize_words() {
+  local old_x=`sh__get_x`
+  set +x
+
+  result=""
+  for word; do
+    if [ "$result" == "" ]; then
+      result="$word"
+    else
+      result="$result $word"
+    fi
+  done
+  echo "$result"
+
+  set $old_x
+}
+
+sh__first_word() {
+  echo $1
+}

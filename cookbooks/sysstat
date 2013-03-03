@@ -1,0 +1,15 @@
+sysstat__install() {
+  yum install -y sysstat
+}
+
+sysstat__config() {
+  f=/etc/cron.d/sysstat
+  if ! grep -qF '*/1 * * * * root /usr/lib64/sa/sa1 1 1' $f; then
+    sed -i -e '/root \/usr\/lib64\/sa\/sa1 1 1$/s|^[^ \t]*|*/1|' $f
+  fi
+}
+
+sysstat__main() {
+  sysstat__install
+  sysstat__config
+}

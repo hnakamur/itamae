@@ -1,0 +1,59 @@
+ntp__servers="\
+ntp.nict.jp \
+ntp1.jst.mfeed.ad.jp \
+ntp2.jst.mfeed.ad.jp \
+ntp3.jst.mfeed.ad.jp \
+"
+
+ntp__config_file=/etc/ntp.conf
+
+ntp__install() {
+  if ! rpm -q ntp; then
+    yum install -y ntp
+  fi
+}
+
+ntp__get_servers() {
+   awk '$1=="server"{printf("%s ", $2)}' $ntp__config_file
+}
+
+ntp__echo_sed_script() {
+  local old_x=`sh__get_x`
+  set +x
+
+  echo '/^server[ \t]/,/^$/{'
+  echo '/^server[ \t]/d'
+  echo '/^$/{i\'
+  for server in $ntp__servers; do
+    echo "server $server\\"
+  done
+  echo ''
+  echo 'd'
+  echo '}'
+  echo '}'
+
+  set $old_x
+}
+
+ntp__config() {
+  local current_servers=`ntp__get_servers`
+  if [ "`sh__normalize_words $current_servers`" != \
+       "`sh__normalize_words $ntp__servers`" ]; then
+    if service ntpd status; then
+      service ntpd stop
+    fi
+    ntpdate `sh__first_word $ntp__servers`
+
+    script=/tmp/ntp.conf.sed.$$
+    ntp__echo_sed_script > $script
+    sed -i -f $script $ntp__config_file
+    rm $script
+  fi
+  service ntpd start
+  chkconfig ntpd on
+}
+
+ntp__main() {
+  ntp__install
+  ntp__config
+}
