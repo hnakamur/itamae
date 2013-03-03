@@ -22,7 +22,7 @@ itamae_log__level_num() {
   emerg)   echo 7 ;;
   panic)   echo 8 ;;
   none)    echo 9 ;;
-  *)       echo Wrong log level: $1; exit 1 ;;
+  *)       echo Wrong log level: $1 1>&2; exit 1 ;;
   esac
 }
 
