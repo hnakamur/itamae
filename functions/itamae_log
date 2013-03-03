@@ -42,7 +42,7 @@ itamae_log() {
   while getopts l:t:s name; do
     case $name in
     l) log_level="$OPTARG" ;;
-    t) tag="$OPTARS" ;;
+    t) tag="$OPTARG" ;;
     *) echo Usage: itame_log [-l level] [-s] [-t tag] message... 1>&2
        exit 1
        ;;
