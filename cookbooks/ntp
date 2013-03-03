@@ -8,8 +8,9 @@ ntp3.jst.mfeed.ad.jp \
 ntp__config_file=/etc/ntp.conf
 
 ntp__install() {
-  if ! rpm -q ntp; then
+  if ! rpm -q ntp > /dev/null; then
     yum install -y ntp
+    itamae_log -t ntp Installed ntp
   fi
 }
 
@@ -41,16 +42,24 @@ ntp__config() {
        "`sh__normalize_words $ntp__servers`" ]; then
     if service ntpd status; then
       service ntpd stop
+      itamae_log -t ntp Stopped ntpd service temporarily to run ntpdate.
     fi
-    ntpdate `sh__first_word $ntp__servers`
+    local first_server=`sh__first_word $ntp__servers`
+    ntpdate $first_server
+    itamae_log -t ntp Done: ntpdate $first_server
 
     script=/tmp/ntp.conf.sed.$$
     ntp__echo_sed_script > $script
     sed -i -f $script $ntp__config_file
+    itamae_log -t ntp Configured $ntp__config_file
     rm $script
   fi
-  service ntpd start
+  if ! service ntpd status; then
+    service ntpd start
+    itamae_log -t ntp Done: service ntpd start
+  fi
   chkconfig ntpd on
+  itamae_log -t ntp Done: chkconfig ntpd on
 }
 
 ntp__main() {
