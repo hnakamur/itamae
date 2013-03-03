@@ -12,4 +12,6 @@ export LANG
 itamae__node=`hostname`
 . ${ITAMAE_HOME}/nodes/${itamae__node}
 itamae_log__config
+itamae_log -l info Itamae start running
 itamae__main 2>&1 | itamae_log
+itamae_log -l info Itamae finish running
