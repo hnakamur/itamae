@@ -27,13 +27,16 @@ itamae_log__level_num() {
 }
 
 itamae_log__config() {
-  if [ ! -f $itamae_log__rsyslog_conf_file -o \
-    `grep -qF "${itamae_log__facility}.* ${itamae_log__file}" $itamae_log__rsyslog_conf_file; echo $?` -ne 0 ]; then
-    cat <<EOF > $itamae_log__rsyslog_conf_file
+  if [ -f $itamae_log__rsyslog_conf_file ]; then
+    if grep -qF "${itamae_log__facility}.* ${itamae_log__file}" $itamae_log__rsyslog_conf_file; then
+      return 0
+    fi
+  fi
+
+  cat <<EOF > $itamae_log__rsyslog_conf_file
 ${itamae_log__facility}.* ${itamae_log__file}
 EOF
-    service rsyslog restart
-  fi
+  service rsyslog restart
 }
 
 itamae_log__log_stdin() {
