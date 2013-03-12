@@ -8,8 +8,11 @@
 
 itamae__main() {
   basic_linux__role__main
+
   epel_repo__main
   remi_repo__main
+  remi_repo__enable
+
   nginx__main
   nginx__start_service
 }

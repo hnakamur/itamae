@@ -13,6 +13,14 @@ remi_repo__setup() {
   fi
 }
 
+remi_repo__enable() {
+  f=/etc/yum.repos.d/remi.repo
+  enabled=`sed -ne '/^\[remi\]/,/^$/{/^enabled=/{s/enabled=//;p;q}}' $f`
+  if [ "$enabled" = 0 ]; then
+    sed -i -e '/^\[remi\]/,/^$/s/enabled=0/enabled=1/' $f
+  fi
+}
+
 remi_repo__main() {
   remi_repo__setup
 }
