@@ -37,7 +37,12 @@ It runs the node script for your hostname.
 
 First time setup
 * Configure hosts so that you can use ssh and rsync to remote hosts.
-* Configure remote hosts so that you can use sudo.
+* Configure remote hosts so that you can use sudo. For example, add your user to wheel group and then add the config below to /etc/sudoers.
+
+```
+Defaults:%wheel !requiretty
+%wheel ALL=(ALL) ALL, (root) NOPASSWD: /usr/bin/rsync, /root/itamae/bin/itamae.sh
+```
 
 Just run ```${ITAMAE_HOME}/bin/remote_itamae.sh host...``` at localhost.
 It will run rsync to push cookbooks, roles and nodes to remote hosts,
