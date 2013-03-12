@@ -1,0 +1,11 @@
+# include roles and cookbooks
+. ${ITAMAE_HOME}/roles/basic_linux
+. ${ITAMAE_HOME}/cookbooks/nginx
+
+# override variables and functions
+
+itamae__main() {
+  basic_linux__role__main
+  nginx__main
+  nginx__start_service
+}
