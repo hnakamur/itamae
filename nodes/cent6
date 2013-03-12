@@ -2,6 +2,7 @@
 . ${ITAMAE_HOME}/roles/basic_linux
 . ${ITAMAE_HOME}/cookbooks/epel_repo
 . ${ITAMAE_HOME}/cookbooks/remi_repo
+. ${ITAMAE_HOME}/cookbooks/hina_repo
 . ${ITAMAE_HOME}/cookbooks/nginx
 
 # override variables and functions
@@ -12,6 +13,7 @@ itamae__main() {
   epel_repo__main
   remi_repo__main
   remi_repo__enable
+  hina_repo__main
 
   nginx__main
   nginx__start_service

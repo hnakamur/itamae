@@ -1,0 +1,16 @@
+# configurations
+
+hina_repo__rpm_name=hina-release
+hina_repo__rpm_url=http://naruh.com/pub/hina-release/el6/RPMS/noarch/hina-release-6-2.noarch.rpm
+
+# functions
+
+hina_repo__setup() {
+  if ! rpm -q $hina_repo__rpm_name > /dev/null; then
+    rpm -i $hina_repo__rpm_url
+  fi
+}
+
+hina_repo__main() {
+  hina_repo__setup
+}
