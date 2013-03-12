@@ -3,6 +3,14 @@
 nginx__repo_rpm_name=nginx-release-centos
 nginx__repo_rpm_url=http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
 
+nginx__gid=495
+nginx__group_name=nginx
+nginx__uid=495
+nginx__user_name=nginx
+nginx__user_comment="nginx user"
+nginx__user_home_dir=/var/cache/nginx
+nginx__user_shell=/sbin/nologin
+
 # functions
 
 nginx__setup_repo() {
@@ -11,7 +19,24 @@ nginx__setup_repo() {
   fi
 }
 
+nginx__create_group() {
+  gid=`awk -F : '$1=="'$nginx__group_name'"{print $3}' /etc/group`
+  if [ "$gid" == "" ]; then
+    groupadd -g $nginx__gid $nginx__group_name
+  fi
+}
+
+nginx__create_user() {
+  uid=`id -u $nginx__user_name 2> /dev/null || :`
+  if [ "$uid" == "" ]; then
+    useradd -g $nginx__gid -u $nginx__uid -c "$nginx__user_comment" \
+      -d $nginx__user_home_dir -s $nginx__user_shell $nginx__user_name
+  fi
+}
+
 nginx__install() {
+  nginx__create_group
+  nginx__create_user
   yum install -y nginx
   chkconfig nginx on
 }
