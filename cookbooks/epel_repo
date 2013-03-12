@@ -1,0 +1,16 @@
+# configurations
+
+epel__repo_rpm_name=epel-release
+epel__repo_rpm_url=http://ftp.riken.jp/Linux/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+# functions
+
+epel_repo__setup() {
+  if ! rpm -q $epel__repo_rpm_name > /dev/null; then
+    rpm -i $epel__repo_rpm_url
+  fi
+}
+
+epel_repo__main() {
+  epel_repo__setup
+}

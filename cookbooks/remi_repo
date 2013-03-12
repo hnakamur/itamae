@@ -1,0 +1,18 @@
+# depends_on: epel_repo
+
+# configurations
+
+remi_repo__rpm_name=remi-release
+remi_repo__rpm_url=http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+
+# functions
+
+remi_repo__setup() {
+  if ! rpm -q $remi_repo__rpm_name > /dev/null; then
+    rpm -i $remi_repo__rpm_url
+  fi
+}
+
+remi_repo__main() {
+  remi_repo__setup
+}
